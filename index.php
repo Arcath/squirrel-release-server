@@ -13,7 +13,11 @@ $app->get('/{platform}/RELEASES', function($request, $response, $args){
 
   $pkgs = scandir(dirname(__FILE__) . '/releases/' . $platform);
 
-  $localVersion = Naneau\SemVer\Parser::parse($_GET['localVersion']);
+  if(isset($_GET['localVersion'])){
+    $localVersion = Naneau\SemVer\Parser::parse($_GET['localVersion']);
+  }else{
+    $localVersion = Naneau\SemVer\Parser::parse('0.0.0');
+  }
 
   foreach ($pkgs as $pkg) {
     if($pkg[0] != '.'){
@@ -22,7 +26,7 @@ $app->get('/{platform}/RELEASES', function($request, $response, $args){
 
       $version = Naneau\SemVer\Parser::parse($matches[1]);
 
-      if(Naneau\SemVer\Compare::greaterThan($version, $localVersion)){
+      if(Naneau\SemVer\Compare::greaterThan($version, $localVersion) || Naneau\SemVer\Compare::equals($version, $localVersion)){
         $hash = sha1_file(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
         $filesize = filesize(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
 
