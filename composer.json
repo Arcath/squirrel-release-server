@@ -1,0 +1,6 @@
+{
+    "require": {
+        "naneau/semver": "^0.0.7",
+        "slim/slim": "^3.5"
+    }
+}
