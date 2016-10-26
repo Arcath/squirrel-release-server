@@ -11,8 +11,9 @@ $app->get('/{platform}/RELEASES', function($request, $response, $args){
 
   $platform = $request->getAttribute('platform');
 
-  $data = "";
   $pkgs = scandir(dirname(__FILE__) . '/releases/' . $platform);
+
+  $localVersion = Naneau\SemVer\Parser::parse($_GET['localVersion']);
 
   foreach ($pkgs as $pkg) {
     if($pkg[0] != '.'){
@@ -21,22 +22,20 @@ $app->get('/{platform}/RELEASES', function($request, $response, $args){
 
       $version = Naneau\SemVer\Parser::parse($matches[1]);
 
-      $hash = sha1_file(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
-      $filesize = filesize(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
+      if(Naneau\SemVer\Compare::greaterThan($version, $localVersion)){
+        $hash = sha1_file(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
+        $filesize = filesize(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
 
-      /*
-      $data .= $hash;
-      $data .= ' ';
-      $data .= '/releases/' . $platform . '/' . $pkg;
-      $data .= ' ';
-      $data .= $filesize;
-      $data .= "\r\n";
-      */
-
-      $response->getBody()->write($hash . ' ' . $config->baseurl . '/releases/' . $platform . '/' . $pkg . ' ' . $filesize . "\r\n");
+        $response->getBody()->write($hash . ' ' . $config->baseurl . '/releases/' . $platform . '/' . $pkg . ' ' . $filesize . "\r\n");
+      }
     }
-
   }
+
+  return $response;
+});
+
+$app->get('/{platform}/notes/{version}', function($request, $response, $args){
+  $response->getBody()->write('Release ' . $request->getAttribute('version'));
 
   return $response;
 });
