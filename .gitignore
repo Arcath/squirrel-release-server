@@ -1,2 +1,2 @@
 vendor/
-releases/
+releases/**/*.nupkg
