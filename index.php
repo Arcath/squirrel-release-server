@@ -24,13 +24,15 @@ $app->get('/{platform}/RELEASES', function($request, $response, $args){
       $re = '/-(.*?)-/';
       preg_match($re, $pkg, $matches);
 
-      $version = Naneau\SemVer\Parser::parse($matches[1]);
+      if (!empty($matches)){
+        $version = Naneau\SemVer\Parser::parse($matches[1]);
 
-      if(Naneau\SemVer\Compare::greaterThan($version, $localVersion) || Naneau\SemVer\Compare::equals($version, $localVersion)){
-        $hash = sha1_file(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
-        $filesize = filesize(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
+        if(Naneau\SemVer\Compare::greaterThan($version, $localVersion) || Naneau\SemVer\Compare::equals($version, $localVersion)){
+          $hash = sha1_file(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
+          $filesize = filesize(dirname(__FILE__) . '/releases/' . $platform . '/' .$pkg);
 
-        $response->getBody()->write($hash . ' ' . $config->baseurl . '/releases/' . $platform . '/' . $pkg . ' ' . $filesize . "\r\n");
+          $response->getBody()->write($hash . ' ' . $config->baseurl . '/releases/' . $platform . '/' . $pkg . ' ' . $filesize . "\r\n");
+        }
       }
     }
   }
