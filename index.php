@@ -6,8 +6,7 @@ $config = json_decode($configFile);
 
 $app = new Slim\App();
 
-$app->get('/{platform}/RELEASES', function($request, $response, $args){
-  global $config;
+$app->get('/{platform}/RELEASES', function($request, $response, $args) use ($config) {
 
   $platform = $request->getAttribute('platform');
 
